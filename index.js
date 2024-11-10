@@ -1,5 +1,5 @@
 const baseUrl = "https://db.ygoprodeck.com/api/v7/cardinfo.php";
-const nomeCarta = document.querySelector('#name-carta');
+const nomeCarta = document.querySelector('#nome-carta');
 const sezioneCarte = document.querySelector('#sezione-carte');
 
 //creare la fetch dell'api
@@ -15,7 +15,7 @@ const createCardDiv = (card) => {
     
     // Aggiungo la foto alla carta (immagine)
     const img = document.createElement('img');
-    img.src = card.image; // Assumo che 'card' abbia una proprietà 'image' per l'URL dell'immagine
+    img.src = card.card_images[0].image_url;  // Assumo che 'card' abbia una proprietà 'image' per l'URL dell'immagine
     photoDiv.appendChild(img); // Aggiungo l'immagine al div della foto
     
     // Creo lo spazio per le informazioni
@@ -37,6 +37,36 @@ const createCardDiv = (card) => {
 
     return div; // Ritorno il div creato
 };
+//cards manager, impostare il set così renderizza le carte in pagina, usare closure
+
+const cardsManager = (() => {
+    let state = [] // qui ci vanno i dati immagino
+    
+    return {
+        set: function(newState) {
+            state = newState;
+            this.render(); //ogni volta che c'è un nuovo stato, renderizza la lista
+        },
+        render: function() { // in teoria prende le carte e le visualizza in pagina, in pratica non funziona ancora, evviva. 23:14 10/11
+            /* sezioneCarte.innerHTML=""; */
+            state.forEach(element => {
+                sezioneCarte.appendChild(createCardDiv(element));
+            })
+        }
+    }
+
+})
+
+//Fetch dell'api e log dell'errore in caso di errore 
+fetch(baseUrl)
+.then(response => response.json())
+.then(card => {
+    cardsManager.render(card.data);
+})
+
+.catch((err) => {
+    console.log('err: ', err);
+})
 
 
 
@@ -46,3 +76,6 @@ const createCardDiv = (card) => {
 //Opzionale
 //aggiungere il modo di cercare le carte anche per tipo
 //aggiungere il modo di cercare le carte per elemento
+
+
+// non funziona il foreach probabilmente, tocca fixare quello
