@@ -1,1 +1,1 @@
-# yuigoh-api
+# Yu-Gi-Oh-api
