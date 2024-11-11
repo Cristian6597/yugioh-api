@@ -40,7 +40,7 @@ const createCardDiv = (card) => {
 //cards manager, impostare il set così renderizza le carte in pagina, usare closure
 
 const cardsManager = (() => {
-    let state = [] // qui ci vanno i dati immagino
+    let state = []; // qui ci vanno i dati immagino
     
     return {
         set: function(newState) {
@@ -48,20 +48,20 @@ const cardsManager = (() => {
             this.render(); //ogni volta che c'è un nuovo stato, renderizza la lista
         },
         render: function() { // in teoria prende le carte e le visualizza in pagina, in pratica non funziona ancora, evviva. 23:14 10/11
-            /* sezioneCarte.innerHTML=""; */
+            sezioneCarte.innerHTML="";
             state.forEach(element => {
                 sezioneCarte.appendChild(createCardDiv(element));
             })
         }
     }
 
-})
+})();
 
 //Fetch dell'api e log dell'errore in caso di errore 
 fetch(baseUrl)
 .then(response => response.json())
 .then(card => {
-    cardsManager.render(card.data);
+    cardsManager.set(card.data);
 })
 
 .catch((err) => {
