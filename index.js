@@ -1,4 +1,4 @@
-const baseUrl = "https://db.ygoprodeck.com/api/v7/cardinfo.php";
+const baseUrl = "https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes";
 const nomeCarta = document.querySelector('#nome-carta');
 const sezioneCarte = document.querySelector('#sezione-carte');
 
@@ -15,7 +15,7 @@ const createCardDiv = (card) => {
     
     // Aggiungo la foto alla carta (immagine)
     const img = document.createElement('img');
-    img.src = card.card_images[0].image_url;  // Assumo che 'card' abbia una proprietà 'image' per l'URL dell'immagine
+    img.src = card.card_images[0].image_url_cropped;  // Prendo l'immagine dall api quella più piccola
     photoDiv.appendChild(img); // Aggiungo l'immagine al div della foto
     
     // Creo lo spazio per le informazioni
@@ -47,21 +47,34 @@ const cardsManager = (() => {
             state = newState;
             this.render(); //ogni volta che c'è un nuovo stato, renderizza la lista
         },
-        render: function() { // in teoria prende le carte e le visualizza in pagina, in pratica non funziona ancora, evviva. 23:14 10/11
-            sezioneCarte.innerHTML="";
-            state.forEach(element => {
-                sezioneCarte.appendChild(createCardDiv(element));
-            })
+        render: function(filtroTesto = "") {
+            sezioneCarte.innerHTML = "";
+            state
+                .filter(card => card.name.toLowerCase().includes(filtroTesto.toLowerCase())) // Filtro carte
+                .forEach(card => {
+                    sezioneCarte.appendChild(createCardDiv(card));
+                });
         }
     }
 
-})();
+});
+
+const firstManager = cardsManager();
+
+//Aggiungo l'event listener per l'input
+nomeCarta.addEventListener('input', () => {
+    const cercaCarta = nomeCarta.value;
+    firstManager.render(cercaCarta);
+});
+
+
+
 
 //Fetch dell'api e log dell'errore in caso di errore 
 fetch(baseUrl)
 .then(response => response.json())
 .then(card => {
-    cardsManager.set(card.data);
+    firstManager.set(card.data);
 })
 
 .catch((err) => {
@@ -70,12 +83,10 @@ fetch(baseUrl)
 
 
 
-
-//visualizzare le carte in ordine con i vari dati e l'immagine
-//fare in modo che quando si scriva sulla barra le carte vengano aggiornate automaticamente (forse un loop? probabile )
+//visualizzare le carte in ordine con i vari dati e l'immagine ( fatto )
+//fare in modo che quando si scriva sulla barra le carte vengano aggiornate automaticamente (fatto ma lagga, vedos e si può fixare, 
+//fixato aveo usato l api di tutte le carte)
+//aggiungere descrizione carta
 //Opzionale
 //aggiungere il modo di cercare le carte anche per tipo
 //aggiungere il modo di cercare le carte per elemento
-
-
-// non funziona il foreach probabilmente, tocca fixare quello
